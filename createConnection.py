@@ -4,10 +4,10 @@ from tableSchema import drop_table_list, create_table_list
 
 def createDatabase():
     conn = psycopg2.connect(
-        database="postgres",
-        user="postgres",
+        database=POSTGRESDB,
+        user=POSTGRESDB_USERNAME,
         host="localhost",
-        password="postgres",
+        password=POSTGRESDB_PASSWORD,
         port=5432,
     )
     conn.set_session(autocommit=True)
@@ -17,10 +17,10 @@ def createDatabase():
     cur.execute("CREATE DATABASE postgresetl WITH ENCODING 'utf8' TEMPLATE template0")
     conn.close()
     conn1 = psycopg2.connect(
-        database="postgresetl",
-        user="postgres",
+        database=POSTGRESDB,
+        user=POSTGRESDB_USERNAME,
         host="localhost",
-        password="postgres",
+        password=POSTGRESDB_PASSWORD,
         port=5432,
     )
     cur1 = conn1.cursor()

@@ -80,9 +80,9 @@ def insertSongPlayRecords(log_df, cur, conn):
 def main():
     conn = psycopg2.connect(
         database="postgresetl",
-        user="postgres",
+        user=POSTGRESDB_USERNAME,
         host="localhost",
-        password="postgres",
+        password=POSTGRESDB_PASSWORD,
         port=5432,
     )
     cur = conn.cursor()
