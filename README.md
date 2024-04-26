@@ -19,6 +19,6 @@ This repo provides the ETL pipeline, to populate the postgresetl database.
 
 ## Running the ETL Pipeline
 ---
-* First, run create_tables.py to create the data tables using the schema design specified. If tables were created previously, they will be dropped and recreated.
+* First, run createConnection.py to create the data tables using the schema design specified. If tables were created previously, they will be dropped and recreated.
 
-* Next, run etl.py to populate the data tables created.
+* Next, run load.py to populate the data tables created.

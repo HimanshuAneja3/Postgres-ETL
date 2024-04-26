@@ -1,11 +1,13 @@
 import pandas as pd
 
-from extraction import getLogFiles
+# from extraction import getLogFiles
 
 
 def tranformaLogData(logFiles):
     for file in logFiles:
         log_df = pd.read_json(file, lines=True)
+    # filter by NextSong action
+    log_df = log_df[log_df["page"] == "NextSong"]
     # user df
     user_df = log_df[["userId", "firstName", "lastName", "gender", "level"]]
     # convert timestamp column to datetime
@@ -28,16 +30,7 @@ def tranformaLogData(logFiles):
     time_df = pd.DataFrame(data=time_data, columns=column_labels)
     time_df.drop_duplicates(inplace=True)
     time_df.dropna(inplace=True)
-    return user_df, time_df
-
-
-log_file_path = (
-    "/Users/sahil/Desktop/Data Engineering/Project/Postgres-ETL/resources/log_data/"
-)
-logFiles = getLogFiles(log_file_path)
-print(logFiles)
-user_data, time_data = tranformaLogData(logFiles)
-print(user_data)
+    return user_df, time_df, log_df
 
 
 def tranformaSongData(songfile):
@@ -45,6 +38,7 @@ def tranformaSongData(songfile):
     artist_data = []
     for file in songfile:
         data_df = pd.read_json(file, lines=True)
+        data_df.drop_duplicates(inplace=True)
         columns_rename = {
             "num_songs": "numsongs",
             "artist_id": "artistID",
@@ -58,6 +52,7 @@ def tranformaSongData(songfile):
             "year": "year",
         }
         data_df.rename(columns=columns_rename, inplace=True)
+
         song_df = list(
             data_df[["songID", "title", "artistID", "year", "duration"]].values[0]
         )

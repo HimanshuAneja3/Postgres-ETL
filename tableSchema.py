@@ -8,12 +8,12 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 # CREATE TABLES
 songplay_table_create = """
 CREATE TABLE songplays
-(songplay_id int PRIMARY KEY, 
+(songplayid int PRIMARY KEY, 
  startTime bigint REFERENCES time(startTime) ON DELETE RESTRICT, 
  userID Int REFERENCES users(userID) ON DELETE RESTRICT, 
  level Varchar(200), 
  songID Varchar(200) REFERENCES songs(songID) ON DELETE RESTRICT, 
- artistID Varchar(200) REFERENCES artists(artistID) ON DELETE RESTRICT, 
+ artistID Varchar(200), 
  sessionID Int, 
  location Varchar(200), 
  user_agent Varchar(200));
@@ -39,7 +39,7 @@ CREATE TABLE songs
 """
 artist_table_create = """
 CREATE TABLE artists
-(artistID Varchar(20) PRIMARY KEY, 
+(artistID Varchar(20), 
  name Varchar(200),
  location Varchar(200),
  latitude FLOAT,
@@ -71,3 +71,10 @@ create_table_list = [
     time_table_create,
     songplay_table_create,
 ]
+
+# FIND SONGS
+
+song_select = """
+SELECT songs.songID, artists.artistID FROM songs
+JOIN artists ON songs.artistID=artists.artistID; 
+"""

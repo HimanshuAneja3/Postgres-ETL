@@ -1,12 +1,13 @@
 from extraction import getLogFiles, getSongFiles
 from transformation import tranformaLogData, tranformaSongData
+from tableSchema import song_select, test
 import psycopg2
 
 
 # INSERT RECORDS
 
 songplay_table_insert = """
-INSERT INTO songplays (songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
+INSERT INTO songplays (songplayid, startTime, userID, level, songID, artistID, sessionID, location, user_agent)
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
 """
 
@@ -38,17 +39,41 @@ def insertSongArtistRecords(song_data, artist_data, cur, conn):
         cur.execute(song_table_insert, item)
         conn.commit()
     for item in artist_data:
-        cur.execute(song_table_insert, item)
+        cur.execute(artist_table_insert, item)
         conn.commit()
 
 
 def insertUserTimeRecords(udf, tdf, cur, conn):
     for i, row in udf.iterrows():
-        print(row)
+
         cur.execute(user_table_insert, row)
         conn.commit()
     for i, row1 in tdf.iterrows():
         cur.execute(time_table_insert, list(row1))
+        conn.commit()
+
+
+def insertSongPlayRecords(log_df, cur, conn):
+    for i, row in log_df.iterrows():
+        cur.execute(song_select, (row.song, row.artist, row.length))
+        results = cur.fetchone()
+        if results:
+            songid, artistid = results
+        else:
+            songid, artistid = None, None
+        songplay_data = (
+            i,
+            row["ts"],
+            row["userId"],
+            row["level"],
+            songid,
+            artistid,
+            row["sessionId"],
+            row["location"],
+            row["userAgent"],
+        )
+
+        cur.execute(songplay_table_insert, songplay_data)
         conn.commit()
 
 
@@ -65,17 +90,14 @@ def main():
     songfile = getSongFiles(song_file_path)
     song_data, artist_data = tranformaSongData(songfile)
     insertSongArtistRecords(song_data, artist_data, cur, conn)
+
     log_file_path = (
         "/Users/sahil/Desktop/Data Engineering/Project/Postgres-ETL/resources/log_data/"
     )
     logFiles = getLogFiles(log_file_path)
-    udf, tdf = tranformaLogData(logFiles)
-    log_file_path = (
-        "/Users/sahil/Desktop/Data Engineering/Project/Postgres-ETL/resources/log_data/"
-    )
-    logFiles = getLogFiles(log_file_path)
-    user_data, time_data = tranformaLogData(logFiles)
+    user_data, time_data, log_df = tranformaLogData(logFiles)
     insertUserTimeRecords(user_data, time_data, cur, conn)
+    insertSongPlayRecords(log_df, cur, conn)
     cur.close()
 
 
