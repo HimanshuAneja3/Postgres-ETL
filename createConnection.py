@@ -1,5 +1,5 @@
 import psycopg2
-from tableSchema import drop_table_list, create_table_list, song_select
+from tableSchema import drop_table_list, create_table_list
 
 
 def createDatabase():
